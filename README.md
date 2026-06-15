@@ -100,7 +100,7 @@ git clone https://github.com/abuhuzaifa12332-lab/defense-system.git
 ### Navigate to the Project Folder
 
 ```bash
-cd defense-system.html
+cd defense-system
 ```
 
 ### Run a Local Server (Optional)
