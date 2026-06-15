@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DEFENSE SYSTEM – Abu Huzaifa</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  background: #000;
+  font-family: 'Share Tech Mono', monospace;
+  color: #00ff41;
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+}
+
+#container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+}
+
+#video {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scaleX(-1);
+  filter: brightness(0.85) contrast(1.1);
+}
+
+#overlay {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* SCAN LINE EFFECT */
+#overlay::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,255,65,0.03) 2px,
+    rgba(0,255,65,0.03) 4px
+  );
+  pointer-events: none;
+  animation: scanMove 8s linear infinite;
+}
+@keyframes scanMove {
+  0% { background-position: 0 0; }
+  100% { background-position: 0 100px; }
+}
+
+/* HUD TOP */
+#hud-top {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  padding: 12px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(0,0,0,0.7);
+  border-bottom: 1px solid rgba(0,255,65,0.3);
+  z-index: 20;
+  backdrop-filter: blur(4px);
+}
+.sys-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 16px;
+  font-weight: 900;
+  color: #00ff41;
+  letter-spacing: 4px;
+  text-shadow: 0 0 10px #00ff41;
+}
+.sys-title span { color: #ff3333; }
+.hud-stats {
+  display: flex;
+  gap: 20px;
+  font-size: 11px;
+  color: #00cc33;
+}
+.hud-stats .val { color: #00ff41; font-weight: bold; }
+.hud-stats .danger { color: #ff3333; }
+
+/* BLINK */
+@keyframes blink {
+  0%,100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+.blink { animation: blink 0.5s infinite; }
+
+/* HUD BOTTOM */
+#hud-bot {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(0,0,0,0.7);
+  border-top: 1px solid rgba(0,255,65,0.3);
+  z-index: 20;
+  font-size: 11px;
+  color: #00aa22;
+}
+#hud-bot span { color: #00ff41; }
+
+/* CORNER BRACKETS */
+#corners {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 15;
+}
+.corner {
+  position: absolute;
+  width: 30px; height: 30px;
+  border-color: #00ff41;
+  border-style: solid;
+  opacity: 0.6;
+}
+.c-tl { top:50px; left:10px; border-width: 2px 0 0 2px; }
+.c-tr { top:50px; right:10px; border-width: 2px 2px 0 0; }
+.c-bl { bottom:42px; left:10px; border-width: 0 0 2px 2px; }
+.c-br { bottom:42px; right:10px; border-width: 0 2px 2px 0; }
+
+/* CENTER CROSSHAIR */
+#crosshair {
+  position: fixed;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 15;
+  opacity: 0.25;
+}
+
+/* ALERT */
+#alert {
+  position: fixed;
+  top: 60px; left: 50%;
+  transform: translateX(-50%);
+  background: rgba(255,0,0,0.15);
+  border: 1px solid #ff3333;
+  color: #ff3333;
+  padding: 6px 24px;
+  border-radius: 4px;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 13px;
+  letter-spacing: 3px;
+  z-index: 25;
+  display: none;
+  text-shadow: 0 0 10px #ff3333;
+}
+
+/* SENSITIVITY SLIDER */
+#controls {
+  position: fixed;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: rgba(0,0,0,0.6);
+  border: 1px solid rgba(0,255,65,0.2);
+  padding: 14px 10px;
+  border-radius: 8px;
+  font-size: 10px;
+  color: #00aa22;
+  align-items: center;
+}
+#controls label { writing-mode: vertical-rl; transform: rotate(180deg); letter-spacing: 2px; }
+input[type=range] {
+  writing-mode: vertical-lr;
+  direction: rtl;
+  width: 6px;
+  height: 100px;
+  accent-color: #00ff41;
+  cursor: pointer;
+}
+#controls .ctrl-val { color: #00ff41; font-size: 11px; }
+
+/* STATUS */
+#status {
+  position: fixed;
+  bottom: 48px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 11px;
+  color: #00aa22;
+  z-index: 20;
+  letter-spacing: 2px;
+}
+</style>
+</head>
+<body>
+
+<div id="container">
+  <video id="video" autoplay playsinline muted></video>
+  <canvas id="overlay"></canvas>
+</div>
+
+<!-- HUD TOP -->
+<div id="hud-top">
+  <div class="sys-title">DEF<span>SYS</span> · <span style="font-size:12px;color:#00ff41">ABU HUZAIFA</span></div>
+  <div class="hud-stats">
+    <span>TARGETS: <span class="val" id="targetCount">0</span></span>
+    <span>MAX SPD: <span class="val" id="maxSpeed">0</span> px/f</span>
+    <span>STATUS: <span class="val" id="sysStatus">SCANNING</span></span>
+    <span>SENS: <span class="val" id="sensVal">30</span></span>
+  </div>
+</div>
+
+<!-- ALERT -->
+<div id="alert">⚠ TARGET ACQUIRED</div>
+
+<!-- CORNERS -->
+<div id="corners">
+  <div class="corner c-tl"></div>
+  <div class="corner c-tr"></div>
+  <div class="corner c-bl"></div>
+  <div class="corner c-br"></div>
+</div>
+
+<!-- CENTER CROSSHAIR -->
+<svg id="crosshair" width="60" height="60" viewBox="0 0 60 60">
+  <line x1="30" y1="0" x2="30" y2="20" stroke="#00ff41" stroke-width="1.5"/>
+  <line x1="30" y1="40" x2="30" y2="60" stroke="#00ff41" stroke-width="1.5"/>
+  <line x1="0" y1="30" x2="20" y2="30" stroke="#00ff41" stroke-width="1.5"/>
+  <line x1="40" y1="30" x2="60" y2="30" stroke="#00ff41" stroke-width="1.5"/>
+  <circle cx="30" cy="30" r="6" fill="none" stroke="#00ff41" stroke-width="1.5"/>
+</svg>
+
+<!-- CONTROLS -->
+<div id="controls">
+  <label>SENSITIVITY</label>
+  <input type="range" id="sensSlider" min="5" max="100" value="30" oninput="updateSens(this.value)">
+  <span class="ctrl-val" id="sensDisplay">30</span>
+</div>
+
+<div id="status">■ INITIALIZING CAMERA...</div>
+
+<!-- HUD BOT -->
+<div id="hud-bot">
+  <span>SYSTEM: <span>ACTIVE</span></span>
+  <span>MODE: <span>MOTION DETECT · HUMAN EXCLUDED</span></span>
+  <span>ABU HUZAIFA · DEFSYS v2.0</span>
+</div>
+
+<script>
+const video    = document.getElementById('video');
+const canvas   = document.getElementById('overlay');
+const ctx      = canvas.getContext('2d');
+const alertEl  = document.getElementById('alert');
+const statusEl = document.getElementById('status');
+
+let W, H;
+let sensitivity = 30;
+let prevFrame = null;
+let targets = [];
+let frameNum = 0;
+let alertTimer = null;
+let maxSpeedEver = 0;
+
+// Resize canvas
+function resize() {
+  W = canvas.width  = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+function updateSens(v) {
+  sensitivity = parseInt(v);
+  document.getElementById('sensVal').textContent = v;
+  document.getElementById('sensDisplay').textContent = v;
+}
+
+// ─── CAMERA ────────────────────────────────────────────
+navigator.mediaDevices.getUserMedia({
+  video: { facingMode: 'environment', width: {ideal:1280}, height: {ideal:720} }
+}).then(stream => {
+  video.srcObject = stream;
+  video.onloadedmetadata = () => {
+    video.play();
+    statusEl.textContent = '■ SYSTEM ONLINE · THROW OBJECT TO DETECT';
+    startDetection();
+  };
+}).catch(e => {
+  statusEl.textContent = '❌ CAMERA ERROR: ' + e.message;
+});
+
+// ─── MOTION DETECTION ─────────────────────────────────
+const motionCanvas = document.createElement('canvas');
+const motionCtx    = motionCanvas.getContext('2d');
+
+// Downscaled for performance
+const SCALE = 0.25;
+
+function startDetection() {
+  motionCanvas.width  = Math.floor(W * SCALE);
+  motionCanvas.height = Math.floor(H * SCALE);
+  detectLoop();
+}
+
+function detectLoop() {
+  requestAnimationFrame(detectLoop);
+  frameNum++;
+
+  // Draw video to motion canvas (small, mirrored)
+  motionCtx.save();
+  motionCtx.translate(motionCanvas.width, 0);
+  motionCtx.scale(-1, 1);
+  motionCtx.drawImage(video, 0, 0, motionCanvas.width, motionCanvas.height);
+  motionCtx.restore();
+
+  const frame = motionCtx.getImageData(0, 0, motionCanvas.width, motionCanvas.height);
+
+  if (prevFrame) {
+    const blobs = detectMotion(frame.data, prevFrame, motionCanvas.width, motionCanvas.height);
+    updateTargets(blobs);
+    drawHUD(blobs);
+  }
+
+  prevFrame = frame.data.slice();
+}
+
+// ─── DETECT MOTION BLOBS ──────────────────────────────
+function detectMotion(curr, prev, w, h) {
+  const thresh = Math.max(20, 120 - sensitivity);
+  const diffMap = new Uint8Array(w * h);
+
+  for (let i = 0; i < w * h; i++) {
+    const p = i * 4;
+    const dr = Math.abs(curr[p]   - prev[p]);
+    const dg = Math.abs(curr[p+1] - prev[p+1]);
+    const db = Math.abs(curr[p+2] - prev[p+2]);
+    diffMap[i] = (dr + dg + db) / 3 > thresh ? 1 : 0;
+  }
+
+  // Find bounding boxes via simple connected regions
+  const blobs = [];
+  const visited = new Uint8Array(w * h);
+
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      const idx = y * w + x;
+      if (diffMap[idx] && !visited[idx]) {
+        // BFS
+        const queue = [idx];
+        visited[idx] = 1;
+        let minX=x, maxX=x, minY=y, maxY=y;
+        let size = 0;
+
+        while (queue.length > 0) {
+          const cur = queue.shift();
+          const cx = cur % w, cy = Math.floor(cur / w);
+          minX = Math.min(minX, cx); maxX = Math.max(maxX, cx);
+          minY = Math.min(minY, cy); maxY = Math.max(maxY, cy);
+          size++;
+
+          const neighbors = [cur-1, cur+1, cur-w, cur+w];
+          for (const n of neighbors) {
+            if (n >= 0 && n < w*h && diffMap[n] && !visited[n]) {
+              visited[n] = 1;
+              queue.push(n);
+            }
+          }
+        }
+
+        // Filter tiny noise
+        if (size > 8) {
+          blobs.push({
+            x: minX / SCALE, y: minY / SCALE,
+            w: (maxX - minX) / SCALE,
+            h: (maxY - minY) / SCALE,
+            cx: ((minX + maxX) / 2) / SCALE,
+            cy: ((minY + maxY) / 2) / SCALE,
+            size
+          });
+        }
+      }
+    }
+  }
+
+  // Merge overlapping blobs
+  return mergeBlobs(blobs);
+}
+
+function mergeBlobs(blobs) {
+  if (blobs.length === 0) return [];
+  const merged = [];
+  const used = new Array(blobs.length).fill(false);
+
+  for (let i = 0; i < blobs.length; i++) {
+    if (used[i]) continue;
+    let b = {...blobs[i]};
+    for (let j = i+1; j < blobs.length; j++) {
+      if (used[j]) continue;
+      const dx = Math.abs(b.cx - blobs[j].cx);
+      const dy = Math.abs(b.cy - blobs[j].cy);
+      if (dx < 120 && dy < 120) {
+        const nx = Math.min(b.x, blobs[j].x);
+        const ny = Math.min(b.y, blobs[j].y);
+        const nx2 = Math.max(b.x+b.w, blobs[j].x+blobs[j].w);
+        const ny2 = Math.max(b.y+b.h, blobs[j].y+blobs[j].h);
+        b = {x:nx, y:ny, w:nx2-nx, h:ny2-ny, cx:(nx+nx2)/2, cy:(ny+ny2)/2, size: b.size+blobs[j].size};
+        used[j] = true;
+      }
+    }
+    merged.push(b);
+  }
+  return merged;
+}
+
+// ─── TARGET TRACKING ──────────────────────────────────
+function updateTargets(blobs) {
+  const newTargets = blobs.map(b => {
+    // Match to existing target
+    let best = null, bestDist = 150;
+    targets.forEach(t => {
+      const d = Math.hypot(t.cx - b.cx, t.cy - b.cy);
+      if (d < bestDist) { bestDist = d; best = t; }
+    });
+
+    const speed = best ? Math.hypot(b.cx - best.cx, b.cy - best.cy) : 0;
+    if (speed > maxSpeedEver) maxSpeedEver = speed;
+
+    return {
+      ...b,
+      speed,
+      id: best ? best.id : Math.random().toString(36).slice(2),
+      history: best ? [...(best.history||[]), {x:b.cx, y:b.cy}].slice(-20) : [{x:b.cx,y:b.cy}],
+      locked: speed > 8  // high speed = locked on
+    };
+  });
+
+  targets = newTargets;
+
+  // Update HUD
+  const locked = targets.filter(t => t.locked);
+  document.getElementById('targetCount').textContent = locked.length;
+  document.getElementById('maxSpeed').textContent = Math.round(maxSpeedEver);
+
+  if (locked.length > 0) {
+    document.getElementById('sysStatus').textContent = '⚠ TARGET LOCKED';
+    document.getElementById('sysStatus').style.color = '#ff3333';
+    showAlert();
+  } else if (targets.length > 0) {
+    document.getElementById('sysStatus').textContent = 'TRACKING';
+    document.getElementById('sysStatus').style.color = '#ffaa00';
+  } else {
+    document.getElementById('sysStatus').textContent = 'SCANNING';
+    document.getElementById('sysStatus').style.color = '#00ff41';
+  }
+}
+
+function showAlert() {
+  alertEl.style.display = 'block';
+  clearTimeout(alertTimer);
+  alertTimer = setTimeout(() => { alertEl.style.display = 'none'; }, 800);
+}
+
+// ─── DRAW HUD ─────────────────────────────────────────
+let scanAngle = 0;
+
+function drawHUD(blobs) {
+  ctx.clearRect(0, 0, W, H);
+
+  scanAngle += 0.03;
+
+  // Scan line sweep
+  ctx.save();
+  ctx.translate(W/2, H/2);
+  const grad = ctx.createConicalGradient ? null : null;
+  const sweepLen = Math.max(W, H);
+  ctx.rotate(scanAngle);
+  const sweepGrad = ctx.createLinearGradient(0, 0, sweepLen, 0);
+  sweepGrad.addColorStop(0, 'rgba(0,255,65,0.08)');
+  sweepGrad.addColorStop(0.3, 'rgba(0,255,65,0.04)');
+  sweepGrad.addColorStop(1, 'transparent');
+  ctx.fillStyle = sweepGrad;
+  ctx.beginPath();
+  ctx.moveTo(0, 0);
+  ctx.arc(0, 0, sweepLen, -0.15, 0.15);
+  ctx.closePath();
+  ctx.fill();
+  ctx.restore();
+
+  // Draw each target
+  targets.forEach(t => {
+    const isLocked = t.locked;
+    const color = isLocked ? '#ff3333' : '#ffaa00';
+    const glow  = isLocked ? '#ff0000' : '#ff8800';
+
+    // Trail
+    if (t.history && t.history.length > 1) {
+      ctx.beginPath();
+      ctx.moveTo(t.history[0].x, t.history[0].y);
+      t.history.forEach((p,i) => {
+        const alpha = i / t.history.length;
+        ctx.strokeStyle = `rgba(${isLocked?'255,50,50':'255,170,0'},${alpha * 0.6})`;
+        ctx.lineWidth = 2;
+        ctx.lineTo(p.x, p.y);
+      });
+      ctx.stroke();
+    }
+
+    // Targeting box
+    const pad = 12;
+    const bx = t.x - pad, by = t.y - pad;
+    const bw = t.w + pad*2, bh = t.h + pad*2;
+
+    ctx.shadowBlur = 15;
+    ctx.shadowColor = glow;
+
+    // Corner brackets
+    const cSize = 18;
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2.5;
+    // TL
+    ctx.beginPath(); ctx.moveTo(bx, by+cSize); ctx.lineTo(bx, by); ctx.lineTo(bx+cSize, by); ctx.stroke();
+    // TR
+    ctx.beginPath(); ctx.moveTo(bx+bw-cSize, by); ctx.lineTo(bx+bw, by); ctx.lineTo(bx+bw, by+cSize); ctx.stroke();
+    // BL
+    ctx.beginPath(); ctx.moveTo(bx, by+bh-cSize); ctx.lineTo(bx, by+bh); ctx.lineTo(bx+cSize, by+bh); ctx.stroke();
+    // BR
+    ctx.beginPath(); ctx.moveTo(bx+bw-cSize, by+bh); ctx.lineTo(bx+bw, by+bh); ctx.lineTo(bx+bw, by+bh-cSize); ctx.stroke();
+
+    // Center dot
+    ctx.beginPath();
+    ctx.arc(t.cx, t.cy, 4, 0, Math.PI*2);
+    ctx.fillStyle = color;
+    ctx.fill();
+
+    // Crosshair lines through target
+    ctx.strokeStyle = color + '88';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([4, 4]);
+    ctx.beginPath(); ctx.moveTo(t.cx - 40, t.cy); ctx.lineTo(t.cx + 40, t.cy); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(t.cx, t.cy - 40); ctx.lineTo(t.cx, t.cy + 40); ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Speed label
+    ctx.shadowBlur = 0;
+    ctx.font = '11px "Share Tech Mono"';
+    ctx.fillStyle = color;
+    ctx.fillText(`SPD: ${Math.round(t.speed)} px/f`, bx, by - 6);
+
+    if (isLocked) {
+      ctx.fillStyle = '#ff3333';
+      ctx.font = 'bold 11px "Orbitron"';
+      ctx.fillText('⬛ LOCKED', bx + bw - 80, by - 6);
+
+      // Rotating ring
+      ctx.save();
+      ctx.translate(t.cx, t.cy);
+      ctx.rotate(scanAngle * 3);
+      ctx.strokeStyle = '#ff333366';
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([6,6]);
+      ctx.beginPath();
+      ctx.arc(0, 0, Math.max(t.w, t.h)/2 + 20, 0, Math.PI*2);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.restore();
+    }
+  });
+
+  // Grid overlay (faint)
+  ctx.strokeStyle = 'rgba(0,255,65,0.04)';
+  ctx.lineWidth = 1;
+  for (let x = 0; x < W; x += 60) {
+    ctx.beginPath(); ctx.moveTo(x, 50); ctx.lineTo(x, H-40); ctx.stroke();
+  }
+  for (let y = 50; y < H-40; y += 60) {
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+  }
+}
+</script>
+</body>
+</html>
