@@ -1,3 +1,7 @@
+![Status](https://img.shields.io/badge/Status-Active-green)
+![Platform](https://img.shields.io/badge/Platform-Web-blue)
+![License](https://img.shields.io/badge/License-MIT-yellow)
+![Made With](https://img.shields.io/badge/Made%20With-JavaScript-orange)
 # 🛡️ Defense System
 
 A futuristic web-based radar and defense simulation system built using HTML, CSS, and JavaScript. It provides real-time tracking visualization, target detection simulation, lock-on indicators, and a military-style control dashboard.
