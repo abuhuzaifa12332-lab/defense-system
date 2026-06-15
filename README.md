@@ -1,67 +1,25 @@
 # 🛡️ Defense System
 
-A futuristic web-based defense monitoring and target tracking simulator built with HTML, CSS, and JavaScript. Featuring advanced radar visualization, threat monitoring, target lock mechanisms, high-speed tracking simulation, and real-time alert systems through an immersive military-inspired command dashboard.
+A futuristic web-based radar and defense simulation system built using HTML, CSS, and JavaScript. It provides real-time tracking visualization, target detection simulation, lock-on indicators, and a military-style control dashboard.
 
 ---
 
 ## 🚀 Overview
 
-Defense System is an interactive browser-based surveillance and monitoring simulator designed to demonstrate modern radar and target-tracking concepts. The system continuously scans its environment, identifies simulated objects, tracks movement patterns, issues threat alerts, and displays lock-on indicators through a futuristic defense interface.
-
-Built entirely with front-end technologies, the project delivers a realistic command-center experience directly inside modern web browsers.
+Defense System is a browser-based simulation project that demonstrates radar scanning, object tracking, and threat visualization using modern front-end technologies. It runs completely on the client side with no backend required.
 
 ---
 
 ## ✨ Features
 
-### 🎯 Advanced Target Detection
-
-* Real-time object detection simulation
-* Continuous radar scanning
-* Multi-target monitoring
-* Dynamic object identification
-
-### 🚀 High-Speed Tracking Engine
-
-* Tracks fast-moving simulated targets
-* Real-time movement analysis
-* Dynamic trajectory visualization
-* Continuous monitoring updates
-
-### 🔒 Smart Target Lock System
-
-* Lock-on target indicators
-* Threat acquisition visualization
-* Tracking status updates
-* Real-time target monitoring
-
-### ⚠️ Threat Warning System
-
-* Automated alert notifications
-* Threat-level monitoring
-* Emergency warning effects
-* Visual security indicators
-
-### 📡 Advanced Radar Dashboard
-
-* Interactive radar sweep animation
-* Military-inspired command interface
-* Futuristic visual effects
-* Live monitoring environment
-
-### 🤖 Non-Human Object Monitoring
-
-* Simulated drone tracking
-* Aircraft monitoring simulation
-* Vehicle tracking visualization
-* Unknown object detection simulation
-
-### 🌐 Browser-Based Operation
-
-* No installation required
-* Lightweight architecture
-* Responsive design
-* Cross-platform compatibility
+* 🎯 Real-time target detection simulation
+* 📡 Radar scanning animation
+* 🔒 Target lock-on system
+* ⚠️ Threat alert indicators
+* 🚀 High-speed tracking visualization
+* 🤖 Object movement simulation
+* 🌐 Fully browser-based application
+* 💻 Responsive UI design
 
 ---
 
@@ -71,91 +29,58 @@ Built entirely with front-end technologies, the project delivers a realistic com
 * CSS3
 * JavaScript (ES6+)
 * Canvas API
-* Advanced Animations
-* Responsive Design
 
 ---
 
-## 📂 Project Structure
+## 📦 Installation & Usage
 
-```text
-defense-system/
-│
-├── defense-system.html
-├── style.css
-├── script.js
-└── README.md
-```
+### 💻 Linux / Kali / Ubuntu
 
----
-
-## 📦 Installation
-
-### Clone the Repository
-
-```bash
+```bash id="l1"
 git clone https://github.com/abuhuzaifa12332-lab/defense-system.git
-```
-
-### Navigate to the Project Folder
-
-```bash
 cd defense-system
-```
-
-### Run a Local Server (Optional)
-
-```bash
 python3 -m http.server 8080
 ```
 
-### Open the Project
+Open in browser:
 
-Using local server:
-
-```text
-http://localhost:8080
-```
-
-Or directly open:
-
-```text
-defense-system.html
+```text id="l2"
+http://localhost:8080/defense-system.html
 ```
 
 ---
 
-## 🎮 Use Cases
+### 📱 Termux (Android)
 
-* Defense system visualization
-* Radar tracking demonstrations
-* Surveillance dashboard simulations
-* Front-end animation showcases
-* Educational technology projects
-* Interactive monitoring interfaces
+```bash id="t1"
+pkg update && pkg upgrade
+pkg install python git -y
+git clone https://github.com/abuhuzaifa12332-lab/defense-system.git
+cd defense-system
+python3 -m http.server 9090
+```
+
+Open in browser:
+
+```text id="t2"
+http://localhost:9090/defense-system.html
+```
 
 ---
 
 ## ⚠️ Disclaimer
 
-This project is a browser-based simulation and educational demonstration. It does not connect to real military systems, radar networks, surveillance infrastructure, aircraft databases, weapon systems, or defense hardware.
+This project is a **simulation and educational UI project only**. It does not interact with real-world defense systems, weapons, radar hardware, or surveillance networks.
 
 ---
 
 ## 👨‍💻 Author
 
 **Abu Huzaifa**
-
-GitHub:
-https://github.com/abuhuzaifa12332-lab
-
-Repository:
-https://github.com/abuhuzaifa12332-lab/defense-system
+GitHub: https://github.com/abuhuzaifa12332-lab
 
 ---
 
 ## ⭐ Support
 
-If you found this project useful, consider giving it a star.
-
-⭐ Star the repository to support future development.
+If you like this project, give it a ⭐ on GitHub.
